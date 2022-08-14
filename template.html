@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Plant Flashcards Template</title>
+    </head>
+
+    <body>
+        <h1>Plant Flashcards</h1>
+
+        {% for photo in photos %}
+        <img src="{{ photo }}" width=50%>
+        {% endfor %}
+
+        <br>
+        <br>
+        
+        <h2>Family</h2>
+        <h3>{{ family }}</h3>
+        
+        <br>
+        <br>
+        
+        <h2>Genus</h2>
+        <h3>{{ genus }}</h3>
+        
+        <br>
+        <br>
+        
+        <h2>Species</h2>
+        <h3>{{ species }}</h3
+        
+        <br>
+        <br>
+    </body>
+</html>
