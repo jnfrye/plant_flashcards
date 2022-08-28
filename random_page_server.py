@@ -22,19 +22,7 @@ def get_taxon():
 
 
 def get_random_taxon():
-    all_taxons = []
-    
-    for fam in os.listdir(PHOTOS_ROOT):
-        if not os.path.isdir(PHOTOS_ROOT + "/" + fam):
-            continue
-        
-        for gen in os.listdir(PHOTOS_ROOT + "/" + fam):
-            if not os.path.isdir(PHOTOS_ROOT + "/" + fam + "/" + gen):
-                continue
-                
-            for spp in os.listdir(PHOTOS_ROOT + "/" + fam + "/" + gen):
-                all_taxons.append((fam, gen, spp))
-    
+    all_taxons = pl.get_all_taxons()
     return random.choice(all_taxons)
 
 
