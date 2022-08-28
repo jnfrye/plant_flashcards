@@ -4,8 +4,10 @@ import random
 import time
 from jinja2 import Environment, FileSystemLoader
 
+import photo_loader as pl
 
-PHOTOS_ROOT = "C:/Users/joshn/Downloads/KeepNotes/Photos/PlantPhotos"
+
+PHOTOS_ROOT = pl.CACHED_PHOTOS_ROOT
 
 
 def main():
@@ -37,6 +39,8 @@ def get_random_taxon():
 
 
 def open_taxon_page(taxon):
+    pl.ensure_photos_cached(taxon)
+    
     photo_files = os.listdir(PHOTOS_ROOT + "/" + "/".join(taxon))
     photos = ["/".join(taxon) + "/" + x for x in photo_files]
     
@@ -47,7 +51,7 @@ def open_taxon_page(taxon):
     with open(PHOTOS_ROOT + "/flashcard.html", 'w') as f:
         f.write(flashcard_html)
     
-    webbrowser.open(PHOTOS_ROOT + "/flashcard.html")
+    webbrowser.open(os.path.abspath(PHOTOS_ROOT + "/flashcard.html"))
 
 
 def get_all_inputs():
