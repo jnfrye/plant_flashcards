@@ -42,7 +42,7 @@ def download_missing_photos(bucket, taxon):
         if not os.path.exists(local_file_folder):
             os.makedirs(local_file_folder)
 
-        print("Downloading " + obj.key)
+        print("Downloading a missing photo!")
         with open(local_file_path, "wb") as f:
             bucket.download_fileobj(obj.key, f)
 
