@@ -47,7 +47,7 @@ def get_all_inputs():
     genus_input = get_input("GENUS")
     species_input = get_input("SPECIES")
     
-    return (family_input, genus_input, species_input)
+    return family_input, genus_input, species_input
 
 
 def get_input(taxon_level):
@@ -57,7 +57,7 @@ def get_input(taxon_level):
 
 
 def save_results(taxon, taxon_results):
-    with open("flashcard_guess_results.csv", 'a') as f:
+    with open("../flashcard_guess_results.csv", 'a') as f:
         f.write(f"{int(time.time())},{','.join(taxon)},{','.join(taxon_results)}\n")
 
 
