@@ -107,6 +107,9 @@ def get_common_name(client, genus, species):
     """
     response = client.get_item(TableName=DYNAMODB_COMMON_NAMES_TABLE, Key={"Binomial": {'S': f"{genus} {species}"}})
 
+    if 'Item' not in response:
+        raise Exception(f"Could not retrieve common name for '{genus} {species}'!")
+
     # The data from the item in the table is always in the 'Item' sub-dictionary
     # That sub-dictionary has the attributes as keys ('Common name' here), and values that are sub-dictionaries
     # Those sub-dictionaries have the attribute type as key ('S' here), and values that are the actual value.
