@@ -83,17 +83,20 @@ def _pick_binomial_to_retry(client):
     binomial_retry_times = dict()
     # If we didn't calculate a delay, the binomial must not have any incorrect guesses, so we don't care about it
     for binomial in binomial_retry_delays.keys():
-        binomial_retry_times[binomial] = binomial_most_recent_guess_times[binomial] + binomial_retry_delays[binomial]
+        retry_time = binomial_most_recent_guess_times[binomial] + binomial_retry_delays[binomial]
 
-    # We return the binomial with the oldest retry time that is before the current time
-    # To do this we just sort the retry times dict chronologically and take the first element
-    oldest_retry_time_kvp = sorted(binomial_retry_times.items(), key=lambda kvp: kvp[1])[0]
+        # We only consider retry times that are in the past
+        if retry_time < time.time_ns():
+            binomial_retry_times[binomial] = retry_time
 
-    # We only return the oldest retry if it is before the present time.
-    if oldest_retry_time_kvp[1] < time.time_ns():
-        return oldest_retry_time_kvp[0]
+    # If we came up with no retry times, there must not be any binomials ready to be retried.
+    if len(binomial_retry_times) == 0:
+        return None
 
-    return None
+    # We return the binomial with the MOST RECENT retry time that is before the current time.
+    # To do this we just sort the retry times dict chronologically and take the last element.
+    oldest_retry_time_kvp = sorted(binomial_retry_times.items(), key=lambda kvp: kvp[1])[-1]
+    return oldest_retry_time_kvp[0]
 
 
 def _get_recent_guesses(client):
