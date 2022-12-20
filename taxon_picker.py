@@ -39,23 +39,27 @@ def pick_taxon(client):
     """
     Determine the taxon that should be guessed on.
     """
-    all_taxa = pl.get_all_taxons()
-
     binomial = _pick_binomial_to_retry(client)
 
     if binomial is not None:
-        return _get_taxon_from_binomial(all_taxa, binomial)
+        return _get_taxon_from_binomial(client, binomial)
 
-    return random.choice(all_taxa)
+    return random.choice(pl.get_all_taxons())
 
 
-def _get_taxon_from_binomial(all_taxa, binomial):
+def _get_taxon_from_binomial(client, binomial):
     genus, species = binomial.split()
-    for taxon in all_taxa:
-        if taxon[1] == genus and taxon[2] == species:
-            return taxon
+    family = _get_family(client, genus)
+    return family, genus, species
 
-    raise Exception(f"Could not find taxon for binomial {binomial}!")
+
+def _get_family(client, genus):
+    response = client.get_item(TableName=const.DYNAMODB_GENERA_TABLE, Key={'Genus': {'S': genus}})
+
+    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
+        raise Exception(f"Could not get family of {genus}! Response: {response}")
+
+    return response['Item']['Family']['S']
 
 
 def _pick_binomial_to_retry(client):
