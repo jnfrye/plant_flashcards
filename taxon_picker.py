@@ -5,8 +5,8 @@ import constants as const
 import photo_loader as pl
 
 MAX_GUESS_AGE_DAYS = 30
-RETRY_DELAY_SECONDS = 60
-RETRY_FACTOR = 4  # If a retry is correctly guessed, this is how many times the prev retry delay until another retry
+RETRY_DELAY_SECONDS = 120
+RETRY_FACTOR = 5  # If a retry is correctly guessed, this is how many times the prev retry delay until another retry
 
 
 class GuessResult:
