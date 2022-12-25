@@ -2,7 +2,6 @@ import time
 import random
 
 import constants as const
-import photo_loader as pl
 
 MAX_GUESS_AGE_DAYS = 30
 RETRY_DELAY_SECONDS = 120
@@ -40,11 +39,10 @@ def pick_taxon(client):
     Determine the taxon that should be guessed on.
     """
     binomial = _pick_binomial_to_retry(client)
+    if binomial is None:
+        binomial = random.choice(_get_all_binomials(client))
 
-    if binomial is not None:
-        return _get_taxon_from_binomial(client, binomial)
-
-    return random.choice(pl.get_all_taxons())
+    return _get_taxon_from_binomial(client, binomial)
 
 
 def _get_taxon_from_binomial(client, binomial):
@@ -56,7 +54,7 @@ def _get_taxon_from_binomial(client, binomial):
 def _get_family(client, genus):
     response = client.get_item(TableName=const.DYNAMODB_GENERA_TABLE, Key={'Genus': {'S': genus}})
 
-    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
+    if response['ResponseMetadata']['HTTPStatusCode'] != 200 or 'Item' not in response:
         raise Exception(f"Could not get family of {genus}! Response: {response}")
 
     return response['Item']['Family']['S']
@@ -101,6 +99,19 @@ def _pick_binomial_to_retry(client):
     # To do this we just sort the retry times dict chronologically and take the last element.
     oldest_retry_time_kvp = sorted(binomial_retry_times.items(), key=lambda kvp: kvp[1])[-1]
     return oldest_retry_time_kvp[0]
+
+
+def _get_all_binomials(client):
+    response = client.scan(TableName=const.DYNAMODB_COMMON_NAMES_TABLE)
+
+    if "LastEvaluatedKey" in response:
+        raise Exception("NEED TO DEAL WITH LastEvaluatedKey")
+
+    all_binomials = []
+    for item in response["Items"]:
+        all_binomials.append(item['Binomial']['S'])
+
+    return all_binomials
 
 
 def _get_recent_guesses(client):
