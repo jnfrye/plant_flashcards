@@ -26,15 +26,12 @@ def main():
 
 
 def open_taxon_page(taxon, common_name):
-    apl.ensure_photos_cached(taxon)
-
-    photo_files = os.listdir(PHOTOS_ROOT + "/" + "/".join(taxon))
-    photos = ["/".join(taxon) + "/" + x for x in photo_files]
+    photo_paths = apl.get_photo_paths(taxon)
 
     env = Environment(loader=FileSystemLoader("."))
     template = env.get_template("template.html")
     flashcard_html = template.render(
-        photos=photos, family=taxon[0], genus=taxon[1], species=taxon[2], common_name=common_name)
+        photos=photo_paths, family=taxon[0], genus=taxon[1], species=taxon[2], common_name=common_name)
 
     with open(PHOTOS_ROOT + "/flashcard.html", 'w') as f:
         f.write(flashcard_html)

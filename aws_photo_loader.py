@@ -9,7 +9,22 @@ CACHE_LOCATION = "../plant_flashcards_cache"
 CACHED_PHOTOS_ROOT = CACHE_LOCATION + "/" + PHOTOS_ROOT_NAME
 
 
-def download_missing_photos(bucket, taxon):
+def get_photo_paths(taxon):
+    _ensure_photos_cached(taxon)
+
+    photo_files = os.listdir(CACHED_PHOTOS_ROOT + "/" + "/".join(taxon))
+    photo_paths = ["/".join(taxon) + "/" + x for x in photo_files]
+
+    return photo_paths
+
+
+def _ensure_photos_cached(taxon):
+    s3 = boto3.resource("s3")
+    bucket = s3.Bucket(BUCKET_NAME)
+    _download_missing_photos(bucket, taxon)
+
+
+def _download_missing_photos(bucket, taxon):
     for obj in bucket.objects.filter(Prefix=PHOTOS_ROOT_NAME + "/" + "/".join(taxon)):
         local_file_path = CACHE_LOCATION + "/" + obj.key
         if os.path.isfile(local_file_path):
@@ -23,9 +38,3 @@ def download_missing_photos(bucket, taxon):
         print("Downloading a missing photo!")
         with open(local_file_path, "wb") as f:
             bucket.download_fileobj(obj.key, f)
-
-
-def ensure_photos_cached(taxon):
-    s3 = boto3.resource("s3")
-    bucket = s3.Bucket(BUCKET_NAME)
-    download_missing_photos(bucket, taxon)
