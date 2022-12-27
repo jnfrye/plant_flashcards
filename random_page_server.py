@@ -6,11 +6,11 @@ import boto3
 from jinja2 import Environment, FileSystemLoader
 
 import constants as const
-import photo_loader as pl
+import aws_photo_loader as apl
 import taxon_picker as tp
 
 
-PHOTOS_ROOT = pl.CACHED_PHOTOS_ROOT
+PHOTOS_ROOT = apl.CACHED_PHOTOS_ROOT
 
 
 def main():
@@ -26,7 +26,7 @@ def main():
 
 
 def open_taxon_page(taxon, common_name):
-    pl.ensure_photos_cached(taxon)
+    apl.ensure_photos_cached(taxon)
 
     photo_files = os.listdir(PHOTOS_ROOT + "/" + "/".join(taxon))
     photos = ["/".join(taxon) + "/" + x for x in photo_files]
