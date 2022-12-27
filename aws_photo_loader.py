@@ -2,18 +2,19 @@ import os
 
 import boto3
 
+import constants as const
+
 
 BUCKET_NAME = "jfrye-plant-flashcards-lzoqgn6e"
 PHOTOS_ROOT_NAME = "PlantPhotos"
-CACHE_LOCATION = "../plant_flashcards_cache"
-CACHED_PHOTOS_ROOT = CACHE_LOCATION + "/" + PHOTOS_ROOT_NAME
 
 
 def get_photo_paths(taxon):
     _ensure_photos_cached(taxon)
 
-    photo_files = os.listdir(CACHED_PHOTOS_ROOT + "/" + "/".join(taxon))
-    photo_paths = ["/".join(taxon) + "/" + x for x in photo_files]
+    taxon_photos_path = PHOTOS_ROOT_NAME + "/" + "/".join(taxon)
+    photo_files = os.listdir(const.CACHE_ROOT + "/" + taxon_photos_path)
+    photo_paths = [taxon_photos_path + "/" + x for x in photo_files]
 
     return photo_paths
 
@@ -26,7 +27,7 @@ def _ensure_photos_cached(taxon):
 
 def _download_missing_photos(bucket, taxon):
     for obj in bucket.objects.filter(Prefix=PHOTOS_ROOT_NAME + "/" + "/".join(taxon)):
-        local_file_path = CACHE_LOCATION + "/" + obj.key
+        local_file_path = const.CACHE_ROOT + "/" + obj.key
         if os.path.isfile(local_file_path):
             continue
 

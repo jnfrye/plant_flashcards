@@ -10,9 +10,6 @@ import aws_photo_loader as apl
 import taxon_picker as tp
 
 
-PHOTOS_ROOT = apl.CACHED_PHOTOS_ROOT
-
-
 def main():
     client = boto3.client("dynamodb")
 
@@ -33,10 +30,11 @@ def open_taxon_page(taxon, common_name):
     flashcard_html = template.render(
         photos=photo_paths, family=taxon[0], genus=taxon[1], species=taxon[2], common_name=common_name)
 
-    with open(PHOTOS_ROOT + "/flashcard.html", 'w') as f:
+    html_file_path = const.CACHE_ROOT + "/flashcard.html"
+    with open(html_file_path, 'w') as f:
         f.write(flashcard_html)
 
-    webbrowser.open(os.path.abspath(PHOTOS_ROOT + "/flashcard.html"))
+    webbrowser.open(os.path.abspath(html_file_path))
 
 
 def get_common_name(client, genus, species):
