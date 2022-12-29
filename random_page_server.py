@@ -1,12 +1,14 @@
-import webbrowser
 import os
+import random
 import time
+import webbrowser
 
 import boto3
 from jinja2 import Environment, FileSystemLoader
 
-import constants as const
 import aws_photo_loader as apl
+import constants as const
+import gis_photo_loader as gpl
 import taxon_picker as tp
 
 
@@ -23,7 +25,12 @@ def main():
 
 
 def open_taxon_page(taxon, common_name):
-    photo_paths = apl.get_photo_paths(taxon)
+    # TODO For now, just use GIS photos 50% of the time
+    random_value = random.random()
+    if random_value < 0.5:
+        photo_paths = apl.get_photo_paths(taxon)
+    else:
+        photo_paths = gpl.get_photo_paths(taxon)
 
     env = Environment(loader=FileSystemLoader("."))
     template = env.get_template("template.html")
