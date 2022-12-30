@@ -37,8 +37,9 @@ def open_taxon_page(taxon, common_name):
     flashcard_html = template.render(
         photos=photo_paths, family=taxon[0], genus=taxon[1], species=taxon[2], common_name=common_name)
 
+    # Some plant photo names will have unicode characters, so we must encode with unicode
     html_file_path = const.CACHE_ROOT + "/flashcard.html"
-    with open(html_file_path, 'w') as f:
+    with open(html_file_path, 'w', encoding="utf-8") as f:
         f.write(flashcard_html)
 
     webbrowser.open(os.path.abspath(html_file_path))

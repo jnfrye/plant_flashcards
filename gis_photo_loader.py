@@ -1,5 +1,6 @@
 import os
 import random
+import urllib.parse
 
 from google_images_search import GoogleImagesSearch
 
@@ -38,6 +39,10 @@ def get_photo_paths(taxon):
             continue
 
         image_file_name = image.url.split('/')[-1].split('\\')[-1]
+
+        # The cached images are saved in unicode encoding, so we must convert from %XX encoding to unicode
+        image_file_name = urllib.parse.unquote(image_file_name)
+
         photo_file_names.append(image_file_name)
 
         # If the destination folders are missing, we must create them first
@@ -49,6 +54,10 @@ def get_photo_paths(taxon):
         cached_photos = os.listdir(cache_destination_path)
         if image_file_name not in cached_photos:
             image.download(cache_destination_path)
+
+            # GIS package encodes special characters using %XX format
+            # Browser can't interpret this, so rename using the unicode character encoding
+            os.rename(image.path, cache_destination_path + "/" + image_file_name)
         else:
             print("CACHED!")
 
