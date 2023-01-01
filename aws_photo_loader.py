@@ -26,7 +26,12 @@ def _ensure_photos_cached(taxon):
 
 
 def _download_missing_photos(bucket, taxon):
-    for obj in bucket.objects.filter(Prefix=PHOTOS_ROOT_NAME + "/" + "/".join(taxon)):
+    photos_bucket_path = PHOTOS_ROOT_NAME + "/" + "/".join(taxon)
+    objects = list(bucket.objects.filter(Prefix=photos_bucket_path))
+    if len(objects) == 0:
+        raise Exception(f"No photos in bucket at '{photos_bucket_path}'!")
+
+    for obj in objects:
         local_file_path = const.CACHE_ROOT + "/" + obj.key
         if os.path.isfile(local_file_path):
             continue
